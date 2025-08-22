@@ -6,7 +6,7 @@ import { TranslatorContext } from 'react-jhipster';
 import notificationMiddleware from './notification-middleware';
 
 describe('Notification Middleware', () => {
-  let store;
+  let store: ReturnType<typeof makeStore>;
 
   const SUCCESS_TYPE = 'SUCCESS/fulfilled';
   const ERROR_TYPE = 'ERROR/rejected';

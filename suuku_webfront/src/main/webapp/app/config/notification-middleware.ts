@@ -4,6 +4,8 @@ import { isFulfilledAction, isRejectedAction } from 'app/shared/reducers/reducer
 import { isAxiosError } from 'axios';
 import { FieldErrorVM, isProblemWithMessage } from 'app/shared/jhipster/problem-details';
 import { getMessageFromHeaders } from 'app/shared/jhipster/headers';
+import { Middleware, MiddlewareAPI, Dispatch, AnyAction } from 'redux';
+import { AxiosError } from 'axios';
 
 type ToastMessage = {
   message?: string;
@@ -27,7 +29,22 @@ const getFieldErrorsToasts = (fieldErrors: FieldErrorVM[]): ToastMessage[] =>
   });
 
 // eslint-disable-next-line complexity
-export default () => next => action => {
+interface NotificationMiddlewareAPI extends MiddlewareAPI<Dispatch<AnyAction>, any> {}
+
+interface NotificationAction extends AnyAction {
+  error?: AxiosError | Error;
+  payload?: {
+    headers?: Record<string, any>;
+  };
+}
+
+interface ProblemDetails {
+  fieldErrors?: FieldErrorVM[];
+  message?: string;
+  detail?: string;
+}
+
+const notificationMiddleware: Middleware<{}, any, Dispatch<AnyAction>> = () => (next: Dispatch<AnyAction>) => (action: NotificationAction) => {
   const { error, payload } = action;
 
   /**
@@ -61,7 +78,7 @@ export default () => next => action => {
         });
       } else {
         const { data } = response;
-        const problem = isProblemWithMessage(data) ? data : null;
+        const problem: ProblemDetails | null = isProblemWithMessage(data) ? data : null;
         if (problem?.fieldErrors) {
           getFieldErrorsToasts(problem.fieldErrors).forEach(message => addErrorAlert(message));
         } else {
@@ -90,3 +107,5 @@ export default () => next => action => {
 
   return next(action);
 };
+
+export default notificationMiddleware;
