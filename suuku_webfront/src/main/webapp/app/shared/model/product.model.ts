@@ -1,4 +1,4 @@
-import { IProductCategory } from 'app/shared/model/suuku_product/product-category.model';
+import { IProductCategory } from 'app/shared/model/product-category.model';
 import { Size } from 'app/shared/model/enumerations/size.model';
 
 export interface IProduct {

@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { IInvoice } from 'app/shared/model/suuku_invoice/invoice.model';
+import { IInvoice } from './invoice.model';
 
 export interface IShipment {
   id?: number;
