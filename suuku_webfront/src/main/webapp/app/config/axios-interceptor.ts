@@ -4,13 +4,29 @@ const TIMEOUT = 1 * 60 * 1000;
 axios.defaults.timeout = TIMEOUT;
 axios.defaults.baseURL = SERVER_API_URL;
 
-const setupAxiosInterceptors = onUnauthenticated => {
-  const onRequestSuccess = config => {
+interface OnUnauthenticated {
+  (): void;
+}
+
+interface OnRequestSuccess {
+  (config: import('axios').InternalAxiosRequestConfig): import('axios').InternalAxiosRequestConfig;
+}
+
+interface OnResponseSuccess {
+  (response: import('axios').AxiosResponse): import('axios').AxiosResponse;
+}
+
+interface OnResponseError {
+  (err: AxiosError): Promise<never>;
+}
+
+const setupAxiosInterceptors = (onUnauthenticated: OnUnauthenticated): void => {
+  const onRequestSuccess: OnRequestSuccess = config => {
     return config;
   };
-  const onResponseSuccess = response => response;
-  const onResponseError = (err: AxiosError) => {
-    const status = err.status || (err.response ? err.response.status : 0);
+  const onResponseSuccess: OnResponseSuccess = response => response;
+  const onResponseError: OnResponseError = (err: AxiosError) => {
+    const status = (err as any).status || (err.response ? err.response.status : 0);
     if (status === 401) {
       onUnauthenticated();
     }
