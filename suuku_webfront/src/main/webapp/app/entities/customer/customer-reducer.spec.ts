@@ -3,8 +3,8 @@ import axios from 'axios';
 import { configureStore } from '@reduxjs/toolkit';
 import sinon from 'sinon';
 
-import { EntityState } from 'app/shared/reducers/reducer.utils';
-import { ICustomer, defaultValue } from 'app/shared/model/customer.model';
+import { EntityState } from '../../shared/reducers/reducer.utils';
+import { ICustomer, defaultValue } from '../../shared/model/customer.model';
 import reducer, { createEntity, deleteEntity, getEntities, getEntity, partialUpdateEntity, reset, updateEntity } from './customer.reducer';
 
 describe('Entities reducer tests', () => {
