@@ -1,0 +1,21 @@
+{
+  "generator-jhipster": {
+    "deploymentType": "kubernetes",
+    "appsFolders": [
+      "suuku_webfront"
+    ],
+    "directoryPath": "../",
+    "kubernetesServiceType": "Ingress",
+    "istio": true,
+    "ingressDomain": "suuku.10.35.0.35.nip.io",
+    "ingressType": "gke",
+    "monitoring": "no",
+    "clusteredDbApps": [],
+    "serviceDiscoveryType": "no",
+    "dockerRepositoryName": "anyuruf",
+    "dockerPushCommand": "docker push",
+    "kubernetesNamespace": "suuku",
+    "kubernetesUseDynamicStorage": false,
+    "kubernetesStorageClassName": ""
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "generator-jhipster": {
+    "applicationType": "gateway",
+    "applications": {
+      "suuku_invoice": {},
+      "suuku_product": {}
+    },
+    "authenticationType": "oauth2",
+    "baseName": "suuku_webfront",
+    "clientFramework": "react",
+    "entities": ["Customer", "Product", "ProductCategory", "ProductOrder", "OrderItem", "Invoice", "Shipment"],
+    "jhipsterVersion": "8.9.0",
+    "languages": ["en"],
+    "lastLiquibaseTimestamp": 1742375470000,
+    "monorepository": true,
+    "nativeLanguage": "en",
+    "packageName": "net.suuku.webfront",
+    "skipCommitHook": true,
+    "skipServer": true
+  }
+}
