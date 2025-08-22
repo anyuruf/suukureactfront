@@ -12,6 +12,10 @@ export const languages: any = {
 
 export const locales = Object.keys(languages).sort();
 
-export const registerLocale = store => {
+interface LocaleStore {
+  dispatch: (action: unknown) => void;
+}
+
+export const registerLocale = (store: LocaleStore): void => {
   store.dispatch(setLocale(Storage.session.get('locale', 'en')));
 };
