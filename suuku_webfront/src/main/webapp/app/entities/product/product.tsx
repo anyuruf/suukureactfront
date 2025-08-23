@@ -7,7 +7,7 @@ import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
+import { SortFunction, HandlePagination } from 'app/shared/model/pagination.model';
 import { getEntities } from './product.reducer';
 
 export const Product = () => {
@@ -61,10 +61,6 @@ export const Product = () => {
     }
   }, [pageLocation.search]);
 
-  interface SortFunction {
-    (field: string): () => void;
-  }
-
   const sort: SortFunction = p => () => {
     setPaginationState({
       ...paginationState,
@@ -73,11 +69,7 @@ export const Product = () => {
     });
   };
 
-  interface HandlePagination {
-    (currentPage: number): void;
-  }
-
-  const handlePagination: HandlePagination = (currentPage: number) =>
+  const handlePagination: HandlePagination = (currentPage =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
