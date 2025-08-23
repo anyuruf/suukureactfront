@@ -24,17 +24,28 @@ interface InjectableStore<S = any, A extends Action = UnknownAction> extends Sto
   injectReducer(key: string, reducer: Reducer): void;
 }
 
-export function configureInjectableStore(storeToInject) {
-  const injectableStore = storeToInject as InjectableStore<any, any>;
+interface AsyncReducersMapObject {
+  [key: string]: Reducer<any, any>;
+}
+
+interface InjectableStoreWithMethods<S = any, A extends Action = UnknownAction> extends InjectableStore<S, A> {
+  asyncReducers: AsyncReducersMapObject;
+  injectReducer: (key: string, reducer: Reducer<any, any>) => void;
+}
+
+export function configureInjectableStore<S = any, A extends Action = UnknownAction>(
+  storeToInject: Store<S, A>
+): InjectableStoreWithMethods<S, A> {
+  const injectableStore = storeToInject as InjectableStoreWithMethods<S, A>;
   injectableStore.asyncReducers = {};
 
-  injectableStore.injectReducer = (key, asyncReducer) => {
+  injectableStore.injectReducer = (key: string, asyncReducer: Reducer<any, any>) => {
     injectableStore.asyncReducers[key] = asyncReducer;
     injectableStore.replaceReducer(
       combineReducers({
         ...sharedReducers,
         ...injectableStore.asyncReducers,
-      }),
+      }) as Reducer<S, A>,
     );
   };
 
