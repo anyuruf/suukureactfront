@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { OrderStatus } from 'app/shared/model/enumerations/order-status.model';
 import { createEntity, getEntity, reset, updateEntity } from './product-order.reducer';
+import { IProductOrder } from '../../shared/model/product-order.model';
 
 export const ProductOrderUpdate = () => {
   const dispatch = useAppDispatch();
@@ -42,11 +43,11 @@ export const ProductOrderUpdate = () => {
     }
   }, [updateSuccess]);
 
-  const saveEntity = values => {
+  const saveEntity = (values: IProductOrder) => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
-    values.placedDate = convertDateTimeToServer(values.placedDate);
+    values.placedDate = convertDateTimeToServer(values.placedDate.toString());
     if (values.invoiceId !== undefined && typeof values.invoiceId !== 'number') {
       values.invoiceId = Number(values.invoiceId);
     }
