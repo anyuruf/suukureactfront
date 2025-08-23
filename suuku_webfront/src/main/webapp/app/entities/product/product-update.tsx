@@ -45,7 +45,24 @@ export const ProductUpdate = () => {
     }
   }, [updateSuccess]);
 
-  const saveEntity = values => {
+  interface SaveEntityValues {
+    id?: number | string;
+    price?: number | string;
+    name?: string;
+    description?: string;
+    itemSize?: string;
+    image?: any;
+    productCategory?: number | string;
+    [key: string]: any;
+  }
+
+  interface ProductCategory {
+    id: number;
+    name: string;
+    [key: string]: any;
+  }
+
+  const saveEntity = (values: SaveEntityValues) => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
@@ -56,7 +73,7 @@ export const ProductUpdate = () => {
     const entity = {
       ...productEntity,
       ...values,
-      productCategory: productCategories.find(it => it.id.toString() === values.productCategory?.toString()),
+      productCategory: productCategories.find((it: ProductCategory) => it.id.toString() === values.productCategory?.toString()),
     };
 
     if (isNew) {
