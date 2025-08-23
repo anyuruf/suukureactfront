@@ -33,7 +33,17 @@ describe('Entities reducer tests', () => {
     updateSuccess: false,
   };
 
-  function testInitialState(state) {
+  interface TestState {
+    loading: boolean;
+    errorMessage: string | null;
+    updating: boolean;
+    updateSuccess: boolean;
+    entities: unknown[];
+    entity: unknown;
+    [key: string]: unknown;
+  }
+
+  function testInitialState(state: TestState): void {
     expect(state).toMatchObject({
       loading: false,
       errorMessage: null,
@@ -44,7 +54,19 @@ describe('Entities reducer tests', () => {
     expect(isEmpty(state.entity));
   }
 
-  function testMultipleTypes(types, payload, testFunction, error?) {
+  interface TestMultipleTypesParams {
+    types: string[];
+    payload: unknown;
+    testFunction: (state: TestState) => void;
+    error?: { message: string };
+  }
+
+  function testMultipleTypes(
+    types: TestMultipleTypesParams['types'],
+    payload: TestMultipleTypesParams['payload'],
+    testFunction: TestMultipleTypesParams['testFunction'],
+    error?: TestMultipleTypesParams['error'],
+  ): void {
     types.forEach(e => {
       testFunction(reducer(undefined, { type: e, payload, error }));
     });
@@ -173,7 +195,7 @@ describe('Entities reducer tests', () => {
   });
 
   describe('Actions', () => {
-    let store;
+    let store: ReturnType<typeof configureStore>;
 
     const resolvedObject = { value: 'whatever' };
     const getState = jest.fn();
@@ -181,7 +203,7 @@ describe('Entities reducer tests', () => {
     const extra = {};
     beforeEach(() => {
       store = configureStore({
-        reducer: (state = [], action) => [...state, action],
+        reducer: (state: any[] = [], action) => [...state, action],
       });
       axios.get = sinon.stub().returns(Promise.resolve(resolvedObject));
       axios.post = sinon.stub().returns(Promise.resolve(resolvedObject));
@@ -250,8 +272,8 @@ describe('Entities reducer tests', () => {
       expect(deleteEntity.fulfilled.match(result)).toBe(true);
     });
 
-    it('dispatches RESET actions', async () => {
-      await store.dispatch(reset());
+    it('dispatches RESET actions', () => {
+      store.dispatch(reset());
       expect(store.getState()).toEqual([expect.any(Object), expect.objectContaining(reset())]);
     });
   });
