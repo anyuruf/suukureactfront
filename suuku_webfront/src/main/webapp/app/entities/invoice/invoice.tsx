@@ -62,7 +62,7 @@ export const Invoice = () => {
     }
   }, [pageLocation.search]);
 
-  const sort = p => () => {
+  const sort = (p: string) => () => {
     setPaginationState({
       ...paginationState,
       order: paginationState.order === ASC ? DESC : ASC,
@@ -70,7 +70,7 @@ export const Invoice = () => {
     });
   };
 
-  const handlePagination = currentPage =>
+  const handlePagination = (currentPage: any) =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
@@ -145,7 +145,7 @@ export const Invoice = () => {
               </tr>
             </thead>
             <tbody>
-              {invoiceList.map((invoice, i) => (
+              {invoiceList.map((invoice: { id: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; code: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; date: string | number | Date; details: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; status: any; paymentMethod: any; paymentDate: string | number | Date; paymentAmount: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; }, i: any) => (
                 <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`/invoice/${invoice.id}`} color="link" size="sm">
