@@ -8,8 +8,14 @@ import { IPaginationBaseState, ISortBaseState } from 'react-jhipster';
  *
  * @param entity Object to clean.
  */
-export const cleanEntity = entity => {
-  const keysToKeep = Object.keys(entity).filter(k => !(entity[k] instanceof Object) || (entity[k].id !== '' && entity[k].id !== -1));
+interface Entity {
+  [key: string]: any;
+}
+
+export const cleanEntity = (entity: Entity): Entity => {
+  const keysToKeep: string[] = Object.keys(entity).filter(
+    (k: string) => !(entity[k] instanceof Object) || (entity[k].id !== '' && entity[k].id !== -1),
+  );
 
   return pick(entity, keysToKeep);
 };
