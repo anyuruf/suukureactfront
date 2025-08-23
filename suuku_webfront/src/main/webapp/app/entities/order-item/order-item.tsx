@@ -7,7 +7,6 @@ import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons'
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
 import { getEntities } from './order-item.reducer';
 import { HandlePagination, SortFunction } from 'app/shared/model/pagination.model';
 

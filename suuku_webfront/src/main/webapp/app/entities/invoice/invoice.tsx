@@ -10,6 +10,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './invoice.reducer';
+import { SortFunction, HandlePagination } from 'app/shared/model/pagination.model';
 
 export const Invoice = () => {
   const dispatch = useAppDispatch();
@@ -62,7 +63,7 @@ export const Invoice = () => {
     }
   }, [pageLocation.search]);
 
-  const sort = (p: string) => () => {
+  const sort: SortFunction = p => () => {
     setPaginationState({
       ...paginationState,
       order: paginationState.order === ASC ? DESC : ASC,
@@ -70,7 +71,7 @@ export const Invoice = () => {
     });
   };
 
-  const handlePagination = (currentPage: any) =>
+  const handlePagination: HandlePagination = currentPage =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
@@ -145,61 +146,99 @@ export const Invoice = () => {
               </tr>
             </thead>
             <tbody>
-              {invoiceList.map((invoice: { id: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; code: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; date: string | number | Date; details: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; status: any; paymentMethod: any; paymentDate: string | number | Date; paymentAmount: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal; }, i: any) => (
-                <tr key={`entity-${i}`} data-cy="entityTable">
-                  <td>
-                    <Button tag={Link} to={`/invoice/${invoice.id}`} color="link" size="sm">
-                      {invoice.id}
-                    </Button>
-                  </td>
-                  <td>{invoice.code}</td>
-                  <td>{invoice.date ? <TextFormat type="date" value={invoice.date} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{invoice.details}</td>
-                  <td>
-                    <Translate contentKey={`suukuWebfrontApp.InvoiceStatus.${invoice.status}`} />
-                  </td>
-                  <td>
-                    <Translate contentKey={`suukuWebfrontApp.PaymentMethod.${invoice.paymentMethod}`} />
-                  </td>
-                  <td>{invoice.paymentDate ? <TextFormat type="date" value={invoice.paymentDate} format={APP_DATE_FORMAT} /> : null}</td>
-                  <td>{invoice.paymentAmount}</td>
-                  <td className="text-end">
-                    <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`/invoice/${invoice.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                        <FontAwesomeIcon icon="eye" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.view">View</Translate>
-                        </span>
+              {invoiceList.map(
+                (
+                  invoice: {
+                    id:
+                      | string
+                      | number
+                      | boolean
+                      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal;
+                    code:
+                      | string
+                      | number
+                      | boolean
+                      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal;
+                    date: string | number | Date;
+                    details:
+                      | string
+                      | number
+                      | boolean
+                      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal;
+                    status: any;
+                    paymentMethod: any;
+                    paymentDate: string | number | Date;
+                    paymentAmount:
+                      | string
+                      | number
+                      | boolean
+                      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal;
+                  },
+                  i: any,
+                ) => (
+                  <tr key={`entity-${i}`} data-cy="entityTable">
+                    <td>
+                      <Button tag={Link} to={`/invoice/${invoice.id}`} color="link" size="sm">
+                        {invoice.id}
                       </Button>
-                      <Button
-                        tag={Link}
-                        to={`/invoice/${invoice.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
-                        color="primary"
-                        size="sm"
-                        data-cy="entityEditButton"
-                      >
-                        <FontAwesomeIcon icon="pencil-alt" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.edit">Edit</Translate>
-                        </span>
-                      </Button>
-                      <Button
-                        onClick={() =>
-                          (window.location.href = `/invoice/${invoice.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
-                        }
-                        color="danger"
-                        size="sm"
-                        data-cy="entityDeleteButton"
-                      >
-                        <FontAwesomeIcon icon="trash" />{' '}
-                        <span className="d-none d-md-inline">
-                          <Translate contentKey="entity.action.delete">Delete</Translate>
-                        </span>
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td>{invoice.code}</td>
+                    <td>{invoice.date ? <TextFormat type="date" value={invoice.date} format={APP_DATE_FORMAT} /> : null}</td>
+                    <td>{invoice.details}</td>
+                    <td>
+                      <Translate contentKey={`suukuWebfrontApp.InvoiceStatus.${invoice.status}`} />
+                    </td>
+                    <td>
+                      <Translate contentKey={`suukuWebfrontApp.PaymentMethod.${invoice.paymentMethod}`} />
+                    </td>
+                    <td>{invoice.paymentDate ? <TextFormat type="date" value={invoice.paymentDate} format={APP_DATE_FORMAT} /> : null}</td>
+                    <td>{invoice.paymentAmount}</td>
+                    <td className="text-end">
+                      <div className="btn-group flex-btn-group-container">
+                        <Button tag={Link} to={`/invoice/${invoice.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                          <FontAwesomeIcon icon="eye" />{' '}
+                          <span className="d-none d-md-inline">
+                            <Translate contentKey="entity.action.view">View</Translate>
+                          </span>
+                        </Button>
+                        <Button
+                          tag={Link}
+                          to={`/invoice/${invoice.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                          color="primary"
+                          size="sm"
+                          data-cy="entityEditButton"
+                        >
+                          <FontAwesomeIcon icon="pencil-alt" />{' '}
+                          <span className="d-none d-md-inline">
+                            <Translate contentKey="entity.action.edit">Edit</Translate>
+                          </span>
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            (window.location.href = `/invoice/${invoice.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`)
+                          }
+                          color="danger"
+                          size="sm"
+                          data-cy="entityDeleteButton"
+                        >
+                          <FontAwesomeIcon icon="trash" />{' '}
+                          <span className="d-none d-md-inline">
+                            <Translate contentKey="entity.action.delete">Delete</Translate>
+                          </span>
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ),
+              )}
             </tbody>
           </Table>
         ) : (
