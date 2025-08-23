@@ -15,6 +15,7 @@ import reducer, {
   updateEntity,
 } from './order-item.reducer';
 
+
 describe('Entities reducer tests', () => {
   function isEmpty(element): boolean {
     if (element instanceof Array) {
@@ -68,14 +69,21 @@ describe('Entities reducer tests', () => {
     });
 
     it('should set state to updating', () => {
+
+      interface TestState {
+        errorMessage: string | null;
+        updateSuccess: boolean;
+        updating: boolean;
+      }
+
       testMultipleTypes(
         [createEntity.pending.type, updateEntity.pending.type, partialUpdateEntity.pending.type, deleteEntity.pending.type],
         {},
-        state => {
+        (state: TestState) => {
           expect(state).toMatchObject({
-            errorMessage: null,
-            updateSuccess: false,
-            updating: true,
+        errorMessage: null,
+        updateSuccess: false,
+        updating: true,
           });
         },
       );
@@ -90,6 +98,16 @@ describe('Entities reducer tests', () => {
 
   describe('Failures', () => {
     it('should set a message in errorMessage', () => {
+      interface TestState {
+        errorMessage: string | null;
+        updateSuccess: boolean;
+        updating: boolean;
+      }
+
+      interface TestError {
+        message: string;
+      }
+
       testMultipleTypes(
         [
           getEntities.rejected.type,
@@ -100,16 +118,16 @@ describe('Entities reducer tests', () => {
           deleteEntity.rejected.type,
         ],
         'some message',
-        state => {
+        (state: TestState) => {
           expect(state).toMatchObject({
-            errorMessage: null,
-            updateSuccess: false,
-            updating: false,
+        errorMessage: null,
+        updateSuccess: false,
+        updating: false,
           });
         },
         {
           message: 'error message',
-        },
+        } as TestError,
       );
     });
   });
@@ -173,7 +191,7 @@ describe('Entities reducer tests', () => {
   });
 
   describe('Actions', () => {
-    let store;
+    let store: ReturnType<typeof configureStore>;
 
     const resolvedObject = { value: 'whatever' };
     const getState = jest.fn();
@@ -181,7 +199,7 @@ describe('Entities reducer tests', () => {
     const extra = {};
     beforeEach(() => {
       store = configureStore({
-        reducer: (state = [], action) => [...state, action],
+        reducer: (state: any[] = [], action) => [...state, action],
       });
       axios.get = sinon.stub().returns(Promise.resolve(resolvedObject));
       axios.post = sinon.stub().returns(Promise.resolve(resolvedObject));
