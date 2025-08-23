@@ -39,12 +39,26 @@ export const ProductCategoryUpdate = () => {
     }
   }, [updateSuccess]);
 
-  const saveEntity = values => {
+  interface ProductCategoryFormValues {
+    id?: number | string;
+    name?: string;
+    description?: string;
+    [key: string]: any;
+  }
+
+  interface ProductCategoryEntity {
+    id?: number;
+    name?: string;
+    description?: string;
+    [key: string]: any;
+  }
+
+  const saveEntity = (values: ProductCategoryFormValues) => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
 
-    const entity = {
+    const entity: ProductCategoryEntity = {
       ...productCategoryEntity,
       ...values,
     };
