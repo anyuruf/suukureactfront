@@ -61,7 +61,11 @@ export const Product = () => {
     }
   }, [pageLocation.search]);
 
-  const sort = p => () => {
+  interface SortFunction {
+    (field: string): () => void;
+  }
+
+  const sort: SortFunction = p => () => {
     setPaginationState({
       ...paginationState,
       order: paginationState.order === ASC ? DESC : ASC,
@@ -69,7 +73,11 @@ export const Product = () => {
     });
   };
 
-  const handlePagination = currentPage =>
+  interface HandlePagination {
+    (currentPage: number): void;
+  }
+
+  const handlePagination: HandlePagination = (currentPage: number) =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
