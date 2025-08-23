@@ -16,7 +16,13 @@ import reducer, {
 } from './product-category.reducer';
 
 describe('Entities reducer tests', () => {
-  function isEmpty(element): boolean {
+  interface EmptyCheckableObject {
+    [key: string]: unknown;
+  }
+
+  type EmptyCheckableArray = unknown[];
+
+  function isEmpty(element: EmptyCheckableArray | EmptyCheckableObject): boolean {
     if (element instanceof Array) {
       return element.length === 0;
     }
@@ -43,8 +49,20 @@ describe('Entities reducer tests', () => {
     expect(isEmpty(state.entity));
   }
 
-  function testMultipleTypes(types, payload, testFunction, error?) {
-    types.forEach(e => {
+  interface TestMultipleTypesOptions {
+    types: string[];
+    payload: unknown;
+    testFunction: (state: EntityState<IProductCategory>) => void;
+    error?: unknown;
+  }
+
+  function testMultipleTypes(
+    types: string[],
+    payload: unknown,
+    testFunction: (state: EntityState<IProductCategory>) => void,
+    error?: unknown,
+  ): void {
+    types.forEach((e: string) => {
       testFunction(reducer(undefined, { type: e, payload, error }));
     });
   }
