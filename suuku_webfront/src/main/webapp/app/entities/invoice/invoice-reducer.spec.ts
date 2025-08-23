@@ -8,7 +8,7 @@ import { IInvoice, defaultValue } from 'app/shared/model/invoice.model';
 import reducer, { createEntity, deleteEntity, getEntities, getEntity, partialUpdateEntity, reset, updateEntity } from './invoice.reducer';
 
 describe('Entities reducer tests', () => {
-  function isEmpty(element): boolean {
+  function isEmpty(element: string | any[]): boolean {
     if (element instanceof Array) {
       return element.length === 0;
     }
@@ -36,7 +36,21 @@ describe('Entities reducer tests', () => {
     expect(isEmpty(state.entity));
   }
 
-  function testMultipleTypes(types, payload, testFunction, error?) {
+  interface TestFunction {
+    (state: EntityState<IInvoice>): void;
+  }
+
+  interface ErrorObject {
+    message?: string;
+    [key: string]: any;
+  }
+
+  function testMultipleTypes(
+    types: string[],
+    payload: any,
+    testFunction: TestFunction,
+    error?: ErrorObject
+  ): void {
     types.forEach(e => {
       testFunction(reducer(undefined, { type: e, payload, error }));
     });
