@@ -10,6 +10,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities } from './shipment.reducer';
+import { HandlePagination, SortFunction } from 'app/shared/model/pagination.model';
 
 export const Shipment = () => {
   const dispatch = useAppDispatch();
@@ -62,7 +63,7 @@ export const Shipment = () => {
     }
   }, [pageLocation.search]);
 
-  const sort = p => () => {
+  const sort: SortFunction = p => () => {
     setPaginationState({
       ...paginationState,
       order: paginationState.order === ASC ? DESC : ASC,
@@ -70,7 +71,7 @@ export const Shipment = () => {
     });
   };
 
-  const handlePagination = currentPage =>
+  const handlePagination: HandlePagination = currentPage =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,
