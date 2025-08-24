@@ -25,7 +25,7 @@ describe('Entities reducer tests', () => {
     updateSuccess: false,
   };
 
-  function testInitialState(state) {
+  function testInitialState(state: EntityState<IShipment>) {
     expect(state).toMatchObject({
       loading: false,
       errorMessage: null,

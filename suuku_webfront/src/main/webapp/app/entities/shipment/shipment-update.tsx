@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities as getInvoices } from 'app/entities/invoice/invoice.reducer';
 import { createEntity, getEntity, reset, updateEntity } from './shipment.reducer';
+import dayjs from 'dayjs';
 
 export const ShipmentUpdate = () => {
   const dispatch = useAppDispatch();
@@ -44,7 +45,15 @@ export const ShipmentUpdate = () => {
     }
   }, [updateSuccess]);
 
-  const saveEntity = values => {
+  interface ShipmentFormValues {
+    id?: number | string;
+    trackingCode?: string | null;
+    date?: string | dayjs.Dayjs; // because form uses datetime-local
+    details?: string | null;
+    invoice?: number | string; // id only
+  }
+
+  const saveEntity = (values: ShipmentFormValues) => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
