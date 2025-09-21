@@ -15,7 +15,7 @@ export type ProblemDetails = {
   instance: string;
 };
 
-export const ProblemWithMessageType = 'https://www.jhipster.tech/problem/problem-with-message';
+export const ProblemWithMessageType = 'https://www.suuku.net/problem/problem-with-message';
 
 export type FieldErrorVM = { message: string; objectName: string; field: string };
 
