@@ -13,6 +13,8 @@ import { Brand, Home } from './header-components';
 export interface IHeaderProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
+  logIn: () => void;
+  logOut: () => void;
   ribbonEnv: string;
   isInProduction: boolean;
   isOpenAPIEnabled: boolean;
@@ -56,7 +58,7 @@ const Header = (props: IHeaderProps) => {
             {props.isAuthenticated && <EntitiesMenu />}
             {props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />}
             <LocaleMenu currentLocale={props.currentLocale} onClick={handleLocaleChange} />
-            <AccountMenu isAuthenticated={props.isAuthenticated} />
+            <AccountMenu isAuthenticated={props.isAuthenticated} logOut={props.logOut} logIn={props.logIn} />
           </Nav>
         </Collapse>
       </Navbar>

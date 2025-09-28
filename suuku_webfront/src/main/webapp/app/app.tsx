@@ -41,6 +41,8 @@ export const App = () => {
           <Header
             isAuthenticated={isAuthenticated}
             isAdmin={isAdmin}
+            logIn={logIn}
+            logOut={logOut}
             currentLocale={currentLocale}
             ribbonEnv={ribbonEnv}
             isInProduction={isInProduction}
