@@ -1,20 +1,14 @@
-import React, { useLayoutEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
-import { useAppDispatch, useAppSelector } from 'app/config/store';
-import { logout } from 'app/shared/reducers/authentication';
+import { AuthContext, IAuthContext } from 'react-oauth2-code-pkce';
 
 export const Logout = () => {
-  const authentication = useAppSelector(state => state.authentication);
-  const dispatch = useAppDispatch();
+  const { logOut }: IAuthContext = useContext(AuthContext);
 
-  useLayoutEffect(() => {
-    dispatch(logout());
-    if (authentication.logoutUrl) {
-      window.location.href = authentication.logoutUrl;
-    } else if (!authentication.isAuthenticated) {
-      window.location.href = '/';
-    }
-  });
+  useEffect(() => {
+    // Trigger OIDC logout right away
+    logOut();
+  }, [logOut]);
 
   return (
     <div className="p-5">

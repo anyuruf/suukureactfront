@@ -52,6 +52,8 @@ export default (): ((next: Next) => (action: Action) => any) => next => action =
    * The error middleware serves to log error messages from dispatch
    * It need not run in production
    */
+  const DEVELOPMENT = process.env.NODE_ENV === 'development';
+
   if (DEVELOPMENT) {
     const { error } = action;
     if (error) {

@@ -69,7 +69,7 @@ export const Product = () => {
     });
   };
 
-  const handlePagination: HandlePagination = (currentPage =>
+  const handlePagination: HandlePagination = currentPage =>
     setPaginationState({
       ...paginationState,
       activePage: currentPage,

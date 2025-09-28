@@ -4,7 +4,6 @@ import { DropdownItem } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Translate, translate } from 'react-jhipster';
 import { getLoginUrl } from 'app/shared/util/url-utils';
-import { useLocation, useNavigate } from 'react-router';
 import { NavDropdown } from './menu-components';
 
 const accountMenuItemsAuthenticated = () => (
@@ -16,21 +15,9 @@ const accountMenuItemsAuthenticated = () => (
 );
 
 const accountMenuItems = () => {
-  const navigate = useNavigate();
-  const pageLocation = useLocation();
-
   return (
     <>
-      <DropdownItem
-        id="login-item"
-        tag="a"
-        data-cy="login"
-        onClick={() =>
-          navigate(getLoginUrl(), {
-            state: { from: pageLocation },
-          })
-        }
-      >
+      <DropdownItem id="login-item" href={getLoginUrl()} data-cy="login">
         <FontAwesomeIcon icon="sign-in-alt" /> <Translate contentKey="global.menu.account.login">Sign in</Translate>
       </DropdownItem>
     </>

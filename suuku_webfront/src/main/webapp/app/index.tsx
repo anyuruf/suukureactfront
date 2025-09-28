@@ -10,6 +10,8 @@ import { clearAuthentication } from 'app/shared/reducers/authentication';
 import ErrorBoundary from 'app/shared/error/error-boundary';
 import AppComponent from 'app/app';
 import { loadIcons } from 'app/config/icon-loader';
+import { authConfig } from './config/oauth2-config';
+import { AuthProvider } from 'react-oauth2-code-pkce';
 
 const store = getStore();
 registerLocale(store);
@@ -25,11 +27,13 @@ const root = createRoot(rootEl);
 const render = Component =>
   root.render(
     <ErrorBoundary>
-      <Provider store={store}>
-        <div>
-          <Component />
-        </div>
-      </Provider>
+      <AuthProvider authConfig={authConfig}>
+        <Provider store={store}>
+          <div>
+            <Component />
+          </div>
+        </Provider>
+      </AuthProvider>
     </ErrorBoundary>,
   );
 

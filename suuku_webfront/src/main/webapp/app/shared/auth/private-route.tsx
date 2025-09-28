@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Navigate, PathRouteProps, useLocation } from 'react-router-dom';
 import { Translate } from 'react-jhipster';
 
-import { useAppSelector } from 'app/config/store';
 import ErrorBoundary from 'app/shared/error/error-boundary';
+import { AuthContext, IAuthContext } from 'react-oauth2-code-pkce';
 
 interface IOwnProps extends PathRouteProps {
   hasAnyAuthorities?: string[];
@@ -11,18 +11,28 @@ interface IOwnProps extends PathRouteProps {
 }
 
 export const PrivateRoute = ({ children, hasAnyAuthorities = [], ...rest }: IOwnProps) => {
-  const isAuthenticated = useAppSelector(state => state.authentication.isAuthenticated);
-  const sessionHasBeenFetched = useAppSelector(state => state.authentication.sessionHasBeenFetched);
-  const account = useAppSelector(state => state.authentication.account);
-  const isAuthorized = hasAnyAuthority(account.authorities, hasAnyAuthorities);
+  const { tokenData, token }: IAuthContext = useContext(AuthContext);
+  const isAuthenticated = Boolean(token);
+  const userRoles: string[] = tokenData?.realm_access?.roles || [];
+
+  const isAuthorized = hasAnyAuthorities.length === 0 || hasAnyAuthorities.some(role => userRoles.includes(role));
   const pageLocation = useLocation();
 
   if (!children) {
     throw new Error(`A component needs to be specified for private route for path ${(rest as any).path}`);
   }
 
-  if (!sessionHasBeenFetched) {
-    return <div></div>;
+  if (!isAuthenticated) {
+    return (
+      <Navigate
+        to={{
+          pathname: '/sign-in',
+          search: pageLocation.search,
+        }}
+        replace
+        state={{ from: pageLocation }}
+      />
+    );
   }
 
   if (isAuthenticated) {
@@ -38,17 +48,6 @@ export const PrivateRoute = ({ children, hasAnyAuthorities = [], ...rest }: IOwn
       </div>
     );
   }
-
-  return (
-    <Navigate
-      to={{
-        pathname: '/sign-in',
-        search: pageLocation.search,
-      }}
-      replace
-      state={{ from: pageLocation }}
-    />
-  );
 };
 
 export const hasAnyAuthority = (authorities: string[], hasAnyAuthorities: string[]) => {

@@ -6,6 +6,7 @@ import { FieldErrorVM, isProblemWithMessage } from 'app/shared/jhipster/problem-
 import { getMessageFromHeaders } from 'app/shared/jhipster/headers';
 import { Middleware, MiddlewareAPI, Dispatch, AnyAction } from 'redux';
 import { AxiosError } from 'axios';
+import { UnknownAction } from '@reduxjs/toolkit';
 
 type ToastMessage = {
   message?: string;
@@ -28,10 +29,9 @@ const getFieldErrorsToasts = (fieldErrors: FieldErrorVM[]): ToastMessage[] =>
     return { message: `Error on field "${fieldName}"`, key: `error.${fieldError.message}`, data: { fieldName } };
   });
 
-// eslint-disable-next-line complexity
 interface NotificationMiddlewareAPI extends MiddlewareAPI<Dispatch<AnyAction>, any> {}
 
-interface NotificationAction extends AnyAction {
+interface NotificationAction extends UnknownAction {
   error?: AxiosError | Error;
   payload?: {
     headers?: Record<string, any>;
@@ -44,68 +44,69 @@ interface ProblemDetails {
   detail?: string;
 }
 
-const notificationMiddleware: Middleware<{}, any, Dispatch<AnyAction>> = () => (next: Dispatch<AnyAction>) => (action: NotificationAction) => {
-  const { error, payload } = action;
+const notificationMiddleware: Middleware<{}, any, Dispatch<UnknownAction>> =
+  () => (next: Dispatch<UnknownAction>) => (action: NotificationAction) => {
+    const { error, payload } = action;
 
-  /**
-   *
-   * The notification middleware serves to add success and error notifications
-   */
-  if (isFulfilledAction(action) && payload?.headers) {
-    const { alert, param } = getMessageFromHeaders(payload.headers);
-    if (alert) {
-      toast.success(translate(alert, { param }));
+    /**
+     *
+     * The notification middleware serves to add success and error notifications
+     */
+    if (isFulfilledAction(action) && payload?.headers) {
+      const { alert, param } = getMessageFromHeaders(payload.headers);
+      if (alert) {
+        toast.success(translate(alert, { param }));
+      }
     }
-  }
 
-  if (isRejectedAction(action) && isAxiosError(error)) {
-    if (error.response) {
-      const { response } = error;
-      if (response.status === 401) {
-        // Ignore, page will be redirected to login.
-      } else if (error.config?.url?.endsWith('api/account') || error.config?.url?.endsWith('api/authenticate')) {
-        // Ignore, authentication status check and authentication are treated differently.
-      } else if (response.status === 0) {
-        // connection refused, server not reachable
-        addErrorAlert({
-          message: 'Server not reachable',
-          key: 'error.server.not.reachable',
-        });
-      } else if (response.status === 404) {
-        addErrorAlert({
-          message: 'Not found',
-          key: 'error.url.not.found',
-        });
-      } else {
-        const { data } = response;
-        const problem: ProblemDetails | null = isProblemWithMessage(data) ? data : null;
-        if (problem?.fieldErrors) {
-          getFieldErrorsToasts(problem.fieldErrors).forEach(message => addErrorAlert(message));
+    if (isRejectedAction(action) && isAxiosError(error)) {
+      if (error.response) {
+        const { response } = error;
+        if (response.status === 401) {
+          // Ignore, page will be redirected to login.
+        } else if (error.config?.url?.endsWith('api/account') || error.config?.url?.endsWith('api/authenticate')) {
+          // Ignore, authentication status check and authentication are treated differently.
+        } else if (response.status === 0) {
+          // connection refused, server not reachable
+          addErrorAlert({
+            message: 'Server not reachable',
+            key: 'error.server.not.reachable',
+          });
+        } else if (response.status === 404) {
+          addErrorAlert({
+            message: 'Not found',
+            key: 'error.url.not.found',
+          });
         } else {
-          const { error: toastError, param } = getMessageFromHeaders((response.headers as any) ?? {});
-          if (toastError) {
-            const entityName = translate(`global.menu.entities.${param}`);
-            addErrorAlert({ key: toastError, data: { entityName } });
-          } else if (problem?.message) {
-            addErrorAlert({ message: problem.detail, key: problem.message });
-          } else if (typeof data === 'string' && data !== '') {
-            addErrorAlert({ message: data });
+          const { data } = response;
+          const problem: ProblemDetails | null = isProblemWithMessage(data) ? data : null;
+          if (problem?.fieldErrors) {
+            getFieldErrorsToasts(problem.fieldErrors).forEach(message => addErrorAlert(message));
           } else {
-            toast.error(data?.detail ?? data?.message ?? data?.error ?? data?.title ?? 'Unknown error!');
+            const { error: toastError, param } = getMessageFromHeaders((response.headers as any) ?? {});
+            if (toastError) {
+              const entityName = translate(`global.menu.entities.${param}`);
+              addErrorAlert({ key: toastError, data: { entityName } });
+            } else if (problem?.message) {
+              addErrorAlert({ message: problem.detail, key: problem.message });
+            } else if (typeof data === 'string' && data !== '') {
+              addErrorAlert({ message: data });
+            } else {
+              toast.error(data?.detail ?? data?.message ?? data?.error ?? data?.title ?? 'Unknown error!');
+            }
           }
         }
+      } else if (error.config?.url?.endsWith('api/account') && error.config?.method === 'get') {
+        /* eslint-disable no-console */
+        console.log('Authentication Error: Trying to access url api/account with GET.');
+      } else {
+        addErrorAlert({ message: error.message ?? 'Unknown error!' });
       }
-    } else if (error.config?.url?.endsWith('api/account') && error.config?.method === 'get') {
-      /* eslint-disable no-console */
-      console.log('Authentication Error: Trying to access url api/account with GET.');
-    } else {
+    } else if (error) {
       addErrorAlert({ message: error.message ?? 'Unknown error!' });
     }
-  } else if (error) {
-    addErrorAlert({ message: error.message ?? 'Unknown error!' });
-  }
 
-  return next(action);
-};
+    return next(action);
+  };
 
 export default notificationMiddleware;

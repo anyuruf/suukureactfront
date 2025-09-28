@@ -5,6 +5,8 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AppThunk } from 'app/config/store';
 import { setLocale } from 'app/shared/reducers/locale';
 import { serializeAxiosError } from './reducer.utils';
+import { AuthContext, IAuthContext } from 'react-oauth2-code-pkce';
+import { useContext } from 'react';
 
 export const initialState = {
   loading: false,
@@ -15,6 +17,8 @@ export const initialState = {
   sessionHasBeenFetched: false,
   logoutUrl: null as unknown as string,
 };
+
+const { tokenData, token, logIn, logOut, error }: IAuthContext = useContext(AuthContext);
 
 export type AuthenticationState = Readonly<typeof initialState>;
 
