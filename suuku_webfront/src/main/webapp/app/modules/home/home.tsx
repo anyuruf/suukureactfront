@@ -10,14 +10,6 @@ import { AuthContext, IAuthContext } from 'react-oauth2-code-pkce';
 export const Home = () => {
   const { tokenData: account, logIn }: IAuthContext = useContext(AuthContext);
 
-  useEffect(() => {
-    const redirectURL = localStorage.getItem(REDIRECT_URL);
-    if (redirectURL) {
-      localStorage.removeItem(REDIRECT_URL);
-      location.href = `${location.origin}${redirectURL}`;
-    }
-  });
-
   const handleLogin: MouseEventHandler<HTMLAnchorElement> = event => {
     logIn();
   };

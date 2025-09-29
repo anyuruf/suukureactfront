@@ -1,10 +1,10 @@
 import { translate } from 'react-jhipster';
 import { toast } from 'react-toastify';
 import { isFulfilledAction, isRejectedAction } from 'app/shared/reducers/reducer.utils';
-import { isAxiosError } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 import { FieldErrorVM, isProblemWithMessage } from 'app/shared/jhipster/problem-details';
 import { getMessageFromHeaders } from 'app/shared/jhipster/headers';
-import { Middleware, MiddlewareAPI, Dispatch, AnyAction } from 'redux';
+import { Middleware, Dispatch } from 'redux';
 import { AxiosError } from 'axios';
 import { UnknownAction } from '@reduxjs/toolkit';
 
@@ -18,6 +18,31 @@ const addErrorAlert = (message: ToastMessage) => {
   toast.error(message.key ? (translate(message.key, message.data) ?? message.message) : message.message);
 };
 
+function handleHttpError(response: AxiosResponse) {
+  const { status, data, headers } = response;
+
+  if (status === 0) return addErrorAlert({ message: 'Server not reachable', key: 'error.server.not.reachable' });
+  if (status === 404) return addErrorAlert({ message: 'Not found', key: 'error.url.not.found' });
+
+  const problem: ProblemDetails | null = isProblemWithMessage(data) ? data : null;
+
+  if (problem?.fieldErrors) {
+    getFieldErrorsToasts(problem.fieldErrors).forEach(m => addErrorAlert(m));
+    return;
+  }
+
+  const { error: toastError, param } = getMessageFromHeaders(headers ?? {});
+  if (toastError) {
+    const entityName = translate(`global.menu.entities.${param}`);
+    return addErrorAlert({ key: toastError, data: { entityName } });
+  }
+
+  if (problem?.message) return addErrorAlert({ message: problem.detail, key: problem.message });
+  if (typeof data === 'string' && data) return addErrorAlert({ message: data });
+
+  toast.error(data?.detail ?? data?.message ?? data?.error ?? data?.title ?? 'Unknown error!');
+}
+
 const getFieldErrorsToasts = (fieldErrors: FieldErrorVM[]): ToastMessage[] =>
   fieldErrors.map(fieldError => {
     if (['Min', 'Max', 'DecimalMin', 'DecimalMax'].includes(fieldError.message)) {
@@ -29,12 +54,10 @@ const getFieldErrorsToasts = (fieldErrors: FieldErrorVM[]): ToastMessage[] =>
     return { message: `Error on field "${fieldName}"`, key: `error.${fieldError.message}`, data: { fieldName } };
   });
 
-interface NotificationMiddlewareAPI extends MiddlewareAPI<Dispatch<AnyAction>, any> {}
-
 interface NotificationAction extends UnknownAction {
   error?: AxiosError | Error;
   payload?: {
-    headers?: Record<string, any>;
+    headers?: Record<string, unknown>;
   };
 }
 
@@ -44,14 +67,11 @@ interface ProblemDetails {
   detail?: string;
 }
 
-const notificationMiddleware: Middleware<{}, any, Dispatch<UnknownAction>> =
+const notificationMiddleware: Middleware<unknown, unknown, Dispatch<UnknownAction>> =
   () => (next: Dispatch<UnknownAction>) => (action: NotificationAction) => {
     const { error, payload } = action;
 
-    /**
-     *
-     * The notification middleware serves to add success and error notifications
-     */
+    // ✅ Success branch for notification middleware
     if (isFulfilledAction(action) && payload?.headers) {
       const { alert, param } = getMessageFromHeaders(payload.headers);
       if (alert) {
@@ -59,52 +79,28 @@ const notificationMiddleware: Middleware<{}, any, Dispatch<UnknownAction>> =
       }
     }
 
+    // ✅ Error branch for middleware
     if (isRejectedAction(action) && isAxiosError(error)) {
-      if (error.response) {
-        const { response } = error;
-        if (response.status === 401) {
-          // Ignore, page will be redirected to login.
-        } else if (error.config?.url?.endsWith('api/account') || error.config?.url?.endsWith('api/authenticate')) {
-          // Ignore, authentication status check and authentication are treated differently.
-        } else if (response.status === 0) {
-          // connection refused, server not reachable
-          addErrorAlert({
-            message: 'Server not reachable',
-            key: 'error.server.not.reachable',
-          });
-        } else if (response.status === 404) {
-          addErrorAlert({
-            message: 'Not found',
-            key: 'error.url.not.found',
-          });
+      const { response, config, message } = error;
+
+      if (!response) {
+        if (config?.url?.endsWith('api/account') && config.method === 'get') {
+          console.error('Authentication Error: Trying to access url api/account with GET.');
         } else {
-          const { data } = response;
-          const problem: ProblemDetails | null = isProblemWithMessage(data) ? data : null;
-          if (problem?.fieldErrors) {
-            getFieldErrorsToasts(problem.fieldErrors).forEach(message => addErrorAlert(message));
-          } else {
-            const { error: toastError, param } = getMessageFromHeaders((response.headers as any) ?? {});
-            if (toastError) {
-              const entityName = translate(`global.menu.entities.${param}`);
-              addErrorAlert({ key: toastError, data: { entityName } });
-            } else if (problem?.message) {
-              addErrorAlert({ message: problem.detail, key: problem.message });
-            } else if (typeof data === 'string' && data !== '') {
-              addErrorAlert({ message: data });
-            } else {
-              toast.error(data?.detail ?? data?.message ?? data?.error ?? data?.title ?? 'Unknown error!');
-            }
-          }
+          addErrorAlert({ message: message ?? 'Unknown error!' });
         }
-      } else if (error.config?.url?.endsWith('api/account') && error.config?.method === 'get') {
-        /* eslint-disable no-console */
-        console.log('Authentication Error: Trying to access url api/account with GET.');
-      } else {
-        addErrorAlert({ message: error.message ?? 'Unknown error!' });
+        return next(action);
       }
-    } else if (error) {
-      addErrorAlert({ message: error.message ?? 'Unknown error!' });
+
+      if (response.status === 401) return next(action); // ignore, login redirect
+      if (config?.url?.endsWith('api/authenticate')) return next(action);
+
+      handleHttpError(response);
+      return next(action);
     }
+
+    // ✅ Generic fallback
+    if (error) addErrorAlert({ message: error.message ?? 'Unknown error!' });
 
     return next(action);
   };

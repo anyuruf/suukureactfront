@@ -30,4 +30,4 @@ export type ProblemWithMessage = ProblemDetails & {
   fieldErrors?: FieldErrorVM[];
 };
 
-export const isProblemWithMessage = (data: any): data is ProblemWithMessage => data?.type === ProblemWithMessageType;
+export const isProblemWithMessage = (data: { type: string }): data is ProblemWithMessage => data?.type === ProblemWithMessageType;

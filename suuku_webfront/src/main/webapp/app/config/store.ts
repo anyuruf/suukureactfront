@@ -34,7 +34,7 @@ interface InjectableStoreWithMethods<S = any, A extends Action = UnknownAction> 
 }
 
 export function configureInjectableStore<S = any, A extends Action = UnknownAction>(
-  storeToInject: Store<S, A>
+  storeToInject: Store<S, A>,
 ): InjectableStoreWithMethods<S, A> {
   const injectableStore = storeToInject as InjectableStoreWithMethods<S, A>;
   injectableStore.asyncReducers = {};

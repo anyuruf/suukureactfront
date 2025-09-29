@@ -7,7 +7,7 @@ export type HeaderMessage = {
   param?: string;
 };
 
-const headerToString = (headerValue: any): string => {
+const headerToString = (headerValue: unknown): string => {
   if (Array.isArray(headerValue)) {
     if (headerValue.length > 1) {
       throw new Error('Multiple header values found');
@@ -22,7 +22,7 @@ const headerToString = (headerValue: any): string => {
 
 const decodeHeaderValue = (headerValue: string): string => decodeURIComponent(headerValue.replace(/\+/g, ' '));
 
-export const getMessageFromHeaders = (headers: Record<string, any>): HeaderMessage => {
+export const getMessageFromHeaders = (headers: Record<string, unknown>): HeaderMessage => {
   let alert: string | undefined = undefined;
   let param: string | undefined = undefined;
   let error: string | undefined = undefined;
