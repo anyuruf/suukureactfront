@@ -7,7 +7,7 @@ import { NavDropdown } from './menu-components';
 
 const accountMenuItemsAuthenticated = (logOut: () => void) => (
   <>
-    <MenuItem icon="sign-out-alt" onClick={logOut()} data-cy="logout">
+    <MenuItem icon="sign-out-alt" onClick={logOut} data-cy="logout">
       <Translate contentKey="global.menu.account.logout">Sign out</Translate>
     </MenuItem>
   </>
@@ -16,7 +16,7 @@ const accountMenuItemsAuthenticated = (logOut: () => void) => (
 const accountMenuItems = (logIn: () => void) => {
   return (
     <>
-      <DropdownItem id="login-item" onClick={logIn()} data-cy="login">
+      <DropdownItem id="login-item" onClick={logIn} data-cy="login">
         <FontAwesomeIcon icon="sign-in-alt" /> <Translate contentKey="global.menu.account.login">Sign in</Translate>
       </DropdownItem>
     </>

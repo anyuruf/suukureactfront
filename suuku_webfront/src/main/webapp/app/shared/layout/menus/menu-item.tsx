@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { MouseEvent, MouseEventHandler } from 'react';
 import { DropdownItem } from 'reactstrap';
 import { NavLink as Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,7 +7,7 @@ import { IconProp } from '@fortawesome/fontawesome-svg-core';
 export interface IMenuItem {
   children: React.ReactNode;
   icon: IconProp;
-  onClick?: (event: MouseEvent) => void;
+  onClick?: MouseEventHandler<HTMLElement>;
   to?: string;
   id?: string;
   'data-cy'?: string;
