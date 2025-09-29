@@ -149,13 +149,7 @@ export const Invoice = () => {
               {invoiceList.map(
                 (
                   invoice: {
-                    id:
-                      | string
-                      | number
-                      | boolean
-                      | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-                      | Iterable<React.ReactNode>
-                      | React.ReactPortal;
+                    id: string | number;
                     code:
                       | string
                       | number

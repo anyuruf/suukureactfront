@@ -1,17 +1,14 @@
 import './home.scss';
 
-import React, { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { MouseEventHandler, useContext, useEffect } from 'react';
 import { Translate } from 'react-jhipster';
 import { Alert, Col, Row } from 'reactstrap';
 
-import { REDIRECT_URL, getLoginUrl } from 'app/shared/util/url-utils';
-import { useAppSelector } from 'app/config/store';
+import { REDIRECT_URL } from 'app/shared/util/url-utils';
+import { AuthContext, IAuthContext } from 'react-oauth2-code-pkce';
 
 export const Home = () => {
-  const account = useAppSelector(state => state.authentication.account);
-  const pageLocation = useLocation();
-  const navigate = useNavigate();
+  const { tokenData: account, logIn }: IAuthContext = useContext(AuthContext);
 
   useEffect(() => {
     const redirectURL = localStorage.getItem(REDIRECT_URL);
@@ -20,6 +17,10 @@ export const Home = () => {
       location.href = `${location.origin}${redirectURL}`;
     }
   });
+
+  const handleLogin: MouseEventHandler<HTMLAnchorElement> = event => {
+    logIn();
+  };
 
   return (
     <Row>
@@ -33,11 +34,11 @@ export const Home = () => {
         <p className="lead">
           <Translate contentKey="home.subtitle">This is your homepage</Translate>
         </p>
-        {account?.login ? (
+        {account?.preferred_username ? (
           <div>
             <Alert color="success">
-              <Translate contentKey="home.logged.message" interpolate={{ username: account.login }}>
-                You are logged in as user {account.login}.
+              <Translate contentKey="home.logged.message" interpolate={{ username: account.preferred_username }}>
+                You are logged in as user {account.preferred_username}.
               </Translate>
             </Alert>
           </div>
@@ -46,14 +47,7 @@ export const Home = () => {
             <Alert color="warning">
               <Translate contentKey="global.messages.info.authenticated.prefix">If you want to </Translate>
 
-              <a
-                className="alert-link"
-                onClick={() =>
-                  navigate(getLoginUrl(), {
-                    state: { from: pageLocation },
-                  })
-                }
-              >
+              <a className="alert-link" onClick={handleLogin}>
                 <Translate contentKey="global.messages.info.authenticated.link">sign in</Translate>
               </a>
               <Translate contentKey="global.messages.info.authenticated.suffix">
