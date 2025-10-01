@@ -1,6 +1,6 @@
 import './header.scss';
 
-import React, { useState } from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import { Storage, Translate } from 'react-jhipster';
 import { Collapse, Nav, Navbar, NavbarToggler } from 'reactstrap';
 import LoadingBar from 'react-redux-loading-bar';
@@ -13,8 +13,8 @@ import { Brand, Home } from './header-components';
 export interface IHeaderProps {
   isAuthenticated: boolean;
   isAdmin: boolean;
-  logIn: () => void;
-  logOut: () => void;
+  logOut: MouseEventHandler<HTMLElement>;
+  logIn: MouseEventHandler<HTMLElement>;
   ribbonEnv: string;
   isInProduction: boolean;
   isOpenAPIEnabled: boolean;
@@ -58,7 +58,7 @@ const Header = (props: IHeaderProps) => {
             {props.isAuthenticated && <EntitiesMenu />}
             {props.isAuthenticated && props.isAdmin && <AdminMenu showOpenAPI={props.isOpenAPIEnabled} />}
             <LocaleMenu currentLocale={props.currentLocale} onClick={handleLocaleChange} />
-            <AccountMenu isAuthenticated={props.isAuthenticated} logOut={props.logOut} logIn={props.logIn} />
+            <AccountMenu isAuthenticated={props.isAuthenticated} logIn={props.logIn} logOut={props.logOut} />
           </Nav>
         </Collapse>
       </Navbar>

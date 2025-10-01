@@ -1,4 +1,4 @@
-import React, { MouseEvent, MouseEventHandler } from 'react';
+import React, { MouseEventHandler } from 'react';
 import { DropdownItem } from 'reactstrap';
 import { NavLink as Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

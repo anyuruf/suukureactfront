@@ -2,7 +2,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import './app.scss';
 import 'app/config/dayjs';
 
-import React, { useContext, useEffect } from 'react';
+import React, { MouseEventHandler, useContext, useEffect } from 'react';
 import { Card } from 'reactstrap';
 import { BrowserRouter } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -19,7 +19,7 @@ const baseHref = document.querySelector('base').getAttribute('href').replace(/\/
 
 export const App = () => {
   const dispatch = useAppDispatch();
-  const { tokenData, token, logIn, logOut, error }: IAuthContext = useContext(AuthContext);
+  const { tokenData, token, logIn, logOut }: IAuthContext = useContext(AuthContext);
 
   useEffect(() => {
     dispatch(getProfile());
@@ -33,6 +33,15 @@ export const App = () => {
   const isOpenAPIEnabled = useAppSelector(state => state.applicationProfile.isOpenAPIEnabled);
 
   const paddingTop = '60px';
+
+  const logOutHandle: MouseEventHandler<HTMLElement> = event => {
+    logOut();
+  };
+
+  const logInHandle: MouseEventHandler<HTMLElement> = event => {
+    logIn();
+  };
+
   return (
     <BrowserRouter basename={baseHref}>
       <div className="app-container" style={{ paddingTop }}>
@@ -41,12 +50,12 @@ export const App = () => {
           <Header
             isAuthenticated={isAuthenticated}
             isAdmin={isAdmin}
-            logIn={logIn}
-            logOut={logOut}
             currentLocale={currentLocale}
             ribbonEnv={ribbonEnv}
             isInProduction={isInProduction}
             isOpenAPIEnabled={isOpenAPIEnabled}
+            logOut={logOutHandle}
+            logIn={logInHandle}
           />
         </ErrorBoundary>
         <div className="container-fluid view-container" id="app-view-container">
@@ -61,5 +70,4 @@ export const App = () => {
     </BrowserRouter>
   );
 };
-
 export default App;
